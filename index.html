@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101426">
+  <title>AaritUnblocked • Star Rush</title>
+  <style>
+    :root { color-scheme: dark; --gold: #ffd454; --ink: #f6f3ff; --muted: #b7bdd8; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; overflow-x: hidden; color: var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: radial-gradient(ellipse at 50% 40%, #24254c 0%, #14182e 48%, #0d1120 100%);
+    }
+    body::before {
+      content: "AARITUNBLOCKED  ✦  AARITUNBLOCKED  ✦  AARITUNBLOCKED";
+      position: fixed; inset: 0; display: grid; place-items: center; z-index: -1;
+      color: #fff; opacity: .025; font-size: clamp(2rem, 8vw, 7rem); font-weight: 950;
+      text-align: center; transform: rotate(-24deg); pointer-events: none;
+    }
+    .brand-bar {
+      min-height: 64px; padding: 12px clamp(16px, 4vw, 42px); display: flex;
+      justify-content: space-between; align-items: center; border-bottom: 1px solid #ffffff16;
+      background: #0c1020a8; letter-spacing: .12em; font-size: .9rem; font-weight: 900;
+    }
+    .brand { color: var(--gold); text-shadow: 0 0 18px #ffc83d55; }
+    #settingsButton {
+      padding: 9px 13px; border: 1px solid #ffffff38; border-radius: 10px; color: var(--ink);
+      background: #ffffff0d; font-weight: 750; cursor: pointer;
+    }
+    #settingsButton:hover { background: #ffffff1c; }
+    main { width: min(92vw, 690px); margin: clamp(22px, 5vh, 48px) auto 30px; text-align: center; }
+    h1 { margin: 0; font-size: clamp(2rem, 6vw, 3.2rem); letter-spacing: -.04em; }
+    .subtitle { margin: 8px 0 22px; color: var(--muted); }
+    .scoreboard { display: flex; justify-content: center; gap: clamp(18px, 8vw, 70px); margin-bottom: 12px; }
+    .stat { min-width: 95px; color: var(--muted); font-size: .85rem; text-transform: uppercase; letter-spacing: .1em; }
+    .stat strong { display: block; color: var(--ink); font-size: 1.5rem; letter-spacing: 0; }
+    #arena {
+      position: relative; height: min(54vh, 410px); min-height: 270px; overflow: hidden;
+      border: 1px solid #a7a5ff55; border-radius: 22px;
+      background: radial-gradient(circle at 50% 45%, #333363 0, #202747 55%, #18203a 100%);
+      box-shadow: 0 18px 65px #0006, inset 0 0 45px #b4a6ff0c;
+      touch-action: manipulation;
+    }
+    #arena::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .18;
+      background-image: radial-gradient(#d9dbff 1px, transparent 1px); background-size: 31px 31px; }
+    #star {
+      position: absolute; z-index: 2; display: none; width: 64px; height: 64px; padding: 0;
+      border: 0; border-radius: 50%; background: transparent; font-size: 54px; line-height: 1;
+      cursor: pointer; filter: drop-shadow(0 0 11px #ffe36b); user-select: none;
+      opacity: 1; animation: twinkle 1.1s ease-in-out infinite alternate;
+      transition: left .12s ease-out, top .12s ease-out;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #star:hover { filter: drop-shadow(0 0 17px #ffe36b); }
+    #star:active { filter: drop-shadow(0 0 4px #ffe36b); }
+    #message { position: absolute; z-index: 1; inset: 0; display: grid; place-content: center; gap: 8px;
+      padding: 24px; color: #e5e8ff; font-size: 1.1rem; }
+    #message strong { color: var(--gold); font-size: 1.55rem; }
+    #start {
+      margin-top: 17px; padding: 13px 27px; border: 0; border-radius: 12px;
+      background: linear-gradient(135deg, #ffe477, #ffbd38); color: #211a16;
+      font-size: 1rem; font-weight: 900; cursor: pointer; box-shadow: 0 7px 22px #ffc83d35;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    #start:hover { transform: translateY(-2px); box-shadow: 0 10px 28px #ffc83d55; }
+    .game-actions { display: flex; justify-content: center; align-items: center; gap: 10px; }
+    #pauseButton { margin-top: 17px; padding: 12px 18px; border: 1px solid #ffffff3d; border-radius: 12px;
+      color: var(--ink); background: #ffffff10; font-size: 1rem; font-weight: 800; cursor: pointer; }
+    #pauseButton:hover:not(:disabled) { background: #ffffff20; }
+    #pauseButton:disabled { opacity: .45; cursor: default; }
+    #pauseMenu { position: absolute; z-index: 5; inset: 0; display: grid; place-content: center; gap: 11px;
+      padding: 20px; background: #101426d9; backdrop-filter: blur(7px); }
+    #pauseMenu[hidden] { display: none; }
+    #pauseMenu h2 { margin: 0 0 2px; font-size: 2rem; }
+    #pauseMenu p { margin: 0 0 6px; color: var(--muted); }
+    .pause-action { min-width: 190px; padding: 10px 16px; border: 1px solid #ffffff30; border-radius: 10px;
+      color: var(--ink); background: #ffffff12; font: inherit; font-weight: 800; cursor: pointer; }
+    .pause-action:hover { background: #ffffff25; }
+    .pause-action.primary { border: 0; background: linear-gradient(135deg, #ffe477, #ffbd38); color: #211a16; }
+    .help { min-height: 24px; margin: 12px 0 0; color: var(--muted); font-size: .9rem; }
+    footer { padding: 16px; text-align: center; color: #969dbb; font-size: .78rem; letter-spacing: .16em; font-weight: 800; }
+    .spark { position: absolute; z-index: 3; pointer-events: none; font-size: 20px; animation: burst .55s ease-out forwards; }
+    dialog { width: min(90vw, 390px); border: 1px solid #7777bb; border-radius: 18px; padding: 22px;
+      color: var(--ink); background: #191d35; box-shadow: 0 20px 80px #000b; }
+    dialog::backdrop { background: #050713b8; backdrop-filter: blur(4px); }
+    dialog h2 { margin: 0 0 16px; }
+    .setting-row { display: grid; gap: 8px; margin: 14px 0; text-align: left; }
+    .keybinds { display: grid; gap: 13px; margin: 14px 0; }
+    select, #keyButton, .close-button { border: 1px solid #ffffff35; border-radius: 9px; padding: 10px;
+      color: var(--ink); background: #252a48; font: inherit; }
+    #keyButton, .close-button { cursor: pointer; }
+    .close-button { width: 100%; margin-top: 10px; background: #6652ba; font-weight: 800; }
+    .note { color: var(--muted); font-size: .83rem; line-height: 1.45; }
+    @keyframes twinkle { from { scale: .98; } to { scale: 1.04; } }
+    @keyframes burst { from { opacity: 1; transform: translate(0, 0) scale(.6); } to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.4); } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <header class="brand-bar"><span class="brand">✦ AaritUnblocked ✦</span><button id="settingsButton" type="button">⚙ Settings</button></header>
+  <main>
+    <h1>Star Rush</h1>
+    <p class="subtitle">Catch the star before it zips away. How high can your score go?</p>
+    <div class="scoreboard" aria-live="polite">
+      <div class="stat">Score<strong id="score">0</strong></div>
+      <div class="stat">Time<strong><span id="time">25</span>s</strong></div>
+      <div class="stat">Control<strong id="controlLabel">Click</strong></div>
+    </div>
+    <section id="arena" aria-label="Game area">
+      <div id="message"><strong>Ready?</strong><span>Press Start, then catch the ⭐</span></div>
+      <button id="star" type="button" aria-label="Catch the star">⭐</button>
+      <div id="pauseMenu" hidden>
+        <h2>Paused</h2><p>Take a breather, <span id="pauseScore">0</span> stars so far.</p>
+        <button id="resumeButton" class="pause-action primary" type="button">Resume</button>
+        <button id="restartButton" class="pause-action" type="button">Restart round</button>
+        <button id="pauseSettingsButton" class="pause-action" type="button">Settings</button>
+      </div>
+    </section>
+    <div class="game-actions"><button id="start" type="button">Start game</button><button id="pauseButton" type="button" disabled>Ⅱ Pause</button></div>
+    <p id="help" class="help">Big target + 25 seconds = trackpad-friendly fun.</p>
+  </main>
+  <footer>✦ AARITUNBLOCKED • PLAY YOUR WAY • AARITUNBLOCKED ✦<br><span style="letter-spacing:.04em;font-weight:600">Made by Aarit Poudyal</span></footer>
+
+  <dialog id="settingsDialog">
+    <h2>Game settings</h2>
+    <label class="setting-row">How do you want to catch the star?
+      <select id="controlMode"><option value="click">Left-click (default)</option><option value="key">Keyboard key</option></select>
+    </label>
+    <div id="keySetting" class="setting-row" hidden>
+      <span>Choose your catch key</span>
+      <button id="keyButton" type="button">Press a key…</button>
+      <span class="note">Click this button, then press the key you want. Space and letter keys work well.</span>
+    </div>
+    <div class="setting-row">
+      <span>Pause / resume key</span>
+      <button id="pauseKeyButton" type="button">Esc</button>
+      <span class="note">Click, then press the key you want for pausing.</span>
+    </div>
+    <p class="note">Trackpad tip: tap or click near the center of the large star. You have a little extra time to aim.</p>
+    <button id="closeSettings" class="close-button" type="button">Done</button>
+  </dialog>
+
+  <script>
+    const arena = document.querySelector("#arena");
+    const star = document.querySelector("#star");
+    const scoreText = document.querySelector("#score");
+    const timeText = document.querySelector("#time");
+    const message = document.querySelector("#message");
+    const startButton = document.querySelector("#start");
+    const settingsDialog = document.querySelector("#settingsDialog");
+    const controlMode = document.querySelector("#controlMode");
+    const keySetting = document.querySelector("#keySetting");
+    const keyButton = document.querySelector("#keyButton");
+    const help = document.querySelector("#help");
+    const controlLabel = document.querySelector("#controlLabel");
+    const pauseKeyButton = document.querySelector("#pauseKeyButton");
+    const pauseMenu = document.querySelector("#pauseMenu");
+    const pauseButton = document.querySelector("#pauseButton");
+    const pauseScore = document.querySelector("#pauseScore");
+
+    let score = 0;
+    let timeLeft = 25;
+    let timerId;
+    let chosenKey = " ";
+    let listeningForKey = false;
+    let listeningForPauseKey = false;
+    let gameRunning = false;
+    let isPaused = false;
+    let heldKeys = new Set();
+    let pointerOnStar = false;
+    let starReady = true;
+    let starFade = null;
+    let gameRound = 0;
+    let pauseKey = "Escape";
+
+    function keyName(key) { return key === " " ? "Space" : key.length === 1 ? key.toUpperCase() : key; }
+    function updateControlUI() {
+      const keyboard = controlMode.value === "key";
+      keySetting.hidden = !keyboard;
+      controlLabel.textContent = keyboard ? keyName(chosenKey) : "Click";
+      help.textContent = keyboard ? `Press ${keyName(chosenKey)} to catch the star.` : "Big target + 25 seconds = trackpad-friendly fun.";
+    }
+    function moveStar() {
+      const maxX = Math.max(0, arena.clientWidth - star.offsetWidth);
+      const maxY = Math.max(0, arena.clientHeight - star.offsetHeight);
+      star.style.left = Math.random() * maxX + "px";
+      star.style.top = Math.random() * maxY + "px";
+    }
+    function makeBurst() {
+      const box = star.getBoundingClientRect();
+      const arenaBox = arena.getBoundingClientRect();
+      for (let i = 0; i < 7; i++) {
+        const spark = document.createElement("span");
+        spark.className = "spark";
+        spark.textContent = i % 2 ? "✦" : "✨";
+        spark.style.left = (box.left - arenaBox.left + box.width / 2) + "px";
+        spark.style.top = (box.top - arenaBox.top + box.height / 2) + "px";
+        spark.style.setProperty("--dx", (Math.random() * 110 - 55) + "px");
+        spark.style.setProperty("--dy", (Math.random() * 100 - 50) + "px");
+        arena.append(spark);
+        spark.addEventListener("animationend", () => spark.remove(), { once: true });
+      }
+    }
+    async function catchStar() {
+      if (!gameRunning || isPaused || !starReady) return;
+      starReady = false;
+      score += 1;
+      scoreText.textContent = score;
+      makeBurst();
+      const thisRound = gameRound;
+      starFade = star.animate([{ opacity: 1 }, { opacity: 0 }], {
+        duration: 140, easing: "ease-in", fill: "forwards"
+      });
+      await starFade.finished.catch(() => {});
+      if (!gameRunning || thisRound !== gameRound) return;
+      moveStar();
+      starFade = star.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: 170, easing: "ease-out", fill: "forwards"
+      });
+      await starFade.finished.catch(() => {});
+      if (thisRound === gameRound) {
+        starFade = null;
+        starReady = true;
+      }
+    }
+    function titleForScore(finalScore) {
+      if (finalScore >= 40) return "Galaxy Guardian";
+      if (finalScore >= 26) return "Comet Captain";
+      if (finalScore >= 14) return "Starlight Sprinter";
+      if (finalScore >= 6) return "Cosmic Scout";
+      return "Fresh Explorer";
+    }
+    function endGame() {
+      clearInterval(timerId);
+      gameRunning = false;
+      isPaused = false;
+      pauseMenu.hidden = true;
+      pauseButton.disabled = true;
+      pauseButton.textContent = "Ⅱ Pause";
+      gameRound += 1;
+      if (starFade) starFade.cancel();
+      starFade = null;
+      star.style.display = "none";
+      star.style.opacity = "1";
+      message.innerHTML = `<strong>${titleForScore(score)}</strong><span>You caught ${score} ${score === 1 ? "star" : "stars"}. Ready for another round?</span>`;
+      message.style.display = "grid";
+      startButton.textContent = "Play again";
+    }
+    function togglePause() {
+      if (!gameRunning) return;
+      isPaused = !isPaused;
+      pauseMenu.hidden = !isPaused;
+      pauseButton.textContent = isPaused ? "▶ Resume" : "Ⅱ Pause";
+      pauseScore.textContent = score;
+      if (isPaused) {
+        clearInterval(timerId);
+        if (starFade && starFade.playState === "running") starFade.pause();
+      } else {
+        if (starFade && starFade.playState === "paused") starFade.play();
+        timerId = setInterval(() => {
+          timeLeft -= 1;
+          timeText.textContent = timeLeft;
+          if (timeLeft <= 0) endGame();
+        }, 1000);
+      }
+    }
+    function startGame() {
+      clearInterval(timerId);
+      gameRound += 1;
+      if (starFade) starFade.cancel();
+      starFade = null;
+      score = 0;
+      timeLeft = 25;
+      gameRunning = true;
+      isPaused = false;
+      pauseMenu.hidden = true;
+      pauseButton.disabled = false;
+      pauseButton.textContent = "Ⅱ Pause";
+      scoreText.textContent = score;
+      timeText.textContent = timeLeft;
+      message.style.display = "none";
+      star.style.display = "block";
+      star.style.opacity = "1";
+      starReady = true;
+      startButton.textContent = "Restart game";
+      moveStar();
+      timerId = setInterval(() => {
+        timeLeft -= 1;
+        timeText.textContent = timeLeft;
+        if (timeLeft <= 0) endGame();
+      }, 1000);
+    }
+
+    star.addEventListener("pointerdown", event => {
+      if (controlMode.value === "click" && event.isPrimary && event.button === 0) {
+        event.preventDefault();
+        catchStar();
+      }
+    });
+    // Keep the button usable from the keyboard too; pointer clicks are handled on press above.
+    star.addEventListener("click", event => {
+      if (controlMode.value === "click" && event.detail === 0) catchStar();
+    });
+    star.addEventListener("pointerenter", () => { pointerOnStar = true; });
+    star.addEventListener("pointerleave", () => { pointerOnStar = false; });
+    document.addEventListener("keydown", event => {
+      if (listeningForKey) {
+        event.preventDefault();
+        chosenKey = event.key;
+        listeningForKey = false;
+        keyButton.textContent = keyName(chosenKey);
+        updateControlUI();
+        return;
+      }
+      if (listeningForPauseKey) {
+        event.preventDefault();
+        pauseKey = event.key;
+        listeningForPauseKey = false;
+        pauseKeyButton.textContent = keyName(pauseKey);
+        return;
+      }
+      if (settingsDialog.open && event.key === "Escape") {
+        settingsDialog.close();
+        return;
+      }
+      if (event.key.toLowerCase() === pauseKey.toLowerCase() && gameRunning) {
+        event.preventDefault();
+        if (!heldKeys.has(event.key)) togglePause();
+        heldKeys.add(event.key);
+        return;
+      }
+      if (controlMode.value === "key" && event.key.toLowerCase() === chosenKey.toLowerCase() && !heldKeys.has(event.key)) {
+        event.preventDefault();
+        heldKeys.add(event.key);
+        // Keyboard mode still needs careful aiming: the pointer must be over the star.
+        if (pointerOnStar) catchStar();
+      }
+    });
+    document.addEventListener("keyup", event => heldKeys.delete(event.key));
+    window.addEventListener("blur", () => heldKeys.clear());
+    startButton.addEventListener("click", startGame);
+    document.querySelector("#settingsButton").addEventListener("click", () => settingsDialog.showModal());
+    document.querySelector("#closeSettings").addEventListener("click", () => settingsDialog.close());
+    pauseButton.addEventListener("click", togglePause);
+    document.querySelector("#resumeButton").addEventListener("click", togglePause);
+    document.querySelector("#restartButton").addEventListener("click", startGame);
+    document.querySelector("#pauseSettingsButton").addEventListener("click", () => settingsDialog.showModal());
+    controlMode.addEventListener("change", updateControlUI);
+    keyButton.addEventListener("click", () => {
+      listeningForKey = true;
+      keyButton.textContent = "Press any key…";
+    });
+    pauseKeyButton.addEventListener("click", () => {
+      listeningForPauseKey = true;
+      pauseKeyButton.textContent = "Press any key…";
+    });
+    updateControlUI();
+  </script>
+</body>
+</html>
